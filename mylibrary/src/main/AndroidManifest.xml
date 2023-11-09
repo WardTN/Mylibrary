@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dq.mylibrary">
+    <application>
 
+        <provider
+            android:authorities="com.dq.mylibrary.fileProvider"
+            android:name="com.dq.mylibrary.DqFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/dq_provider_paths"
+                />
+
+        </provider>
+
+    </application>
 </manifest>
