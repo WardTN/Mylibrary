@@ -9,9 +9,17 @@ import com.clj.fastble.callback.BleNotifyCallback
 import com.clj.fastble.callback.BleWriteCallback
 import com.clj.fastble.data.BleDevice
 import com.clj.fastble.exception.BleException
+import com.dq.mylibrary.dqLog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import java.util.*
 
-abstract class BaseBleManager:BleListener {
+abstract class BaseBleManager {
+
 
     protected val TAG = BaseBleManager::class.java.simpleName
 
@@ -26,9 +34,17 @@ abstract class BaseBleManager:BleListener {
 
     protected lateinit var bleDevice: BleDevice
 
-//    // 间隔发送心跳
-//    protected val heartbeatInterval: Observable<Long>
-//    protected var heartbeatSubscribe: Disposable? = null
+
+    private val _bleEvents = MutableSharedFlow<BleEvent>()
+    val bleEvents: SharedFlow<BleEvent> = _bleEvents.asSharedFlow()
+
+
+    // 发送事件
+    suspend fun sendBleEvent(event: BleEvent) {
+        dqLog("发送事件")
+        _bleEvents.emit(event)
+    }
+
 
     // 每条指令请求次数
     val PER_REQUEST_COUNT = 3
@@ -38,30 +54,8 @@ abstract class BaseBleManager:BleListener {
         val handlerThread = HandlerThread("bleContract")
         handlerThread.start()
         workHandler = Handler(handlerThread.looper)
-//        heartbeatInterval = Observable.interval(0, getHeartbeatDelay(), TimeUnit.MILLISECONDS)
+
     }
-
-//    /**
-//     * 发送心跳
-//     */
-//    fun sendHeartbeat() {
-//        heartbeatSubscribe = heartbeatInterval.subscribe {
-//            if (!isDeviceConnected()) {
-//                stopHeartbeat()
-//                return@subscribe
-//            }
-//            val querydata = getHeartbeatCommand()
-//            workHandler.post { sendCommand(querydata) }
-//        }
-//    }
-
-//    /**
-//     * 停止心跳
-//     */
-//    fun stopHeartbeat() {
-//        heartbeatSubscribe?.dispose()
-//        heartbeatSubscribe = null
-//    }
 
 
     /**
@@ -169,17 +163,23 @@ abstract class BaseBleManager:BleListener {
                 return
             }
             Log.d(TAG, "接收: 数据长度--${data.size}")
-            workHandler.post { parseNotifyData(data, bleDevice) }
+            workHandler.post { parseNotifyData(data) }
         }
 
         override fun onNotifyFailure(exception: BleException?) {
             Log.e(TAG, "onNotifyFailure")
-            onNotifyFailureEvent(exception)
+
+            CoroutineScope(Dispatchers.Main).launch {
+                sendBleEvent(BleEvent(BLE_EVENT_NOTIFY_FAIL,null))
+            }
+
         }
 
         override fun onNotifySuccess() {
             Log.e(TAG, "onNotifySuccess")
-            onNotifySuccessEvent()
+            CoroutineScope(Dispatchers.Main).launch {
+                sendBleEvent(BleEvent(BLE_EVENT_NOTIFY_SUCCESS,null))
+            }
         }
     }
 
@@ -202,17 +202,9 @@ abstract class BaseBleManager:BleListener {
     /**
      * 解析通知数据
      */
-    protected abstract fun parseNotifyData(data: ByteArray, device: BleDevice)
+    protected abstract fun parseNotifyData(data: ByteArray)
 
-    /**
-     * 处理通知失败事件
-     */
-    protected abstract fun onNotifyFailureEvent(exception: BleException?)
 
-    /**
-     * 处理通知成功事件
-     */
-    protected abstract fun onNotifySuccessEvent()
 
     /**
      * 检查设备是否连接

@@ -1,14 +1,17 @@
 package com.dq.mylibrary.ble
 
 
-const val BLE_NAME_Brush = "WTF__"//哑铃
 
-//扫描超时时间
-const val SCAN_TIME_OUT = 3000L
+const val BLE_EVENT_SCAN_FAIL = 1
+const val BLE_EVENT_SCAN_RESULT = 2
+const val BLE_EVENT_DISCONNECT = 3
+const val BLE_EVENT_CONNECT_FAIL = 4
+const val BLE_EVENT_NOTIFY_FAIL = 5
+const val BLE_EVENT_NOTIFY_SUCCESS = 6
 
-//最大扫描次数
-const val MAX_SCAN_COUNT = 3
-const val MAX_CONNECT_COUNT = 3
+
+
+
 
 
 

@@ -34,6 +34,11 @@ android {
         jniLibs.srcDirs 'src/main/libs'
     }
 
+    dataBinding {
+        enabled = true
+    }
+
+
 }
 
 //afterEvaluate {
@@ -59,10 +64,10 @@ dependencies {
     androidTestImplementation libs.espresso.core
 
     //BlankJ
-    implementation 'com.blankj:utilcodex:1.30.5'
+    api(libs.utilcodex)
 
     // Ble
-    implementation 'com.github.Jasonchenlijian:FastBle:2.4.0'
+    api(libs.fastble)
 
     // XXPermission
 

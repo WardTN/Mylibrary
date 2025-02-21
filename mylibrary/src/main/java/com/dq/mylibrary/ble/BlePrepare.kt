@@ -1,9 +1,12 @@
 package com.dq.mylibrary.ble
 
+import android.app.Activity
 import android.app.Application
 import android.bluetooth.BluetoothGatt
+import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
+import androidx.annotation.RequiresApi
 import com.clj.fastble.BleManager
 import com.clj.fastble.callback.BleGattCallback
 import com.clj.fastble.callback.BleScanCallback
@@ -11,6 +14,13 @@ import com.clj.fastble.data.BleDevice
 import com.clj.fastble.exception.BleException
 import com.clj.fastble.scan.BleScanRuleConfig
 import com.dq.mylibrary.dqLog
+import com.dq.mylibrary.utils.blePermissions
+import com.dq.mylibrary.utils.isAllowPermission
+import com.dq.mylibrary.utils.requestPermission
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
 
 class BlePrepare private constructor() {
 
@@ -27,6 +37,15 @@ class BlePrepare private constructor() {
         val instance: BlePrepare by lazy { BlePrepare() }
         private const val MAX_CONNECT_COUNT = 3
     }
+
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    fun checkPermission(activity: Activity) {
+        if (!isAllowPermission(activity, blePermissions)) {
+            requestPermission(activity, blePermissions)
+        }
+    }
+
 
     fun initBle(application: Application, bleDevBean: BleDevBean) {
         this.bleDevBean = bleDevBean
@@ -51,18 +70,28 @@ class BlePrepare private constructor() {
         BleManager.getInstance().initScanRule(scanRuleConfig)
     }
 
-    fun startScanBle(bleMsgManager: BaseBleManager){
+    fun startScanBle(bleMsgManager: BaseBleManager): Boolean {
         this.bleMsgManager = bleMsgManager
-        startScanBle()
+        val isBleEnable = BleManager.getInstance().isBlueEnable
+        if (isBleEnable) {
+            startScanBle()
+            return true
+        } else {
+            BleManager.getInstance().enableBluetooth();
+        }
+        return false
     }
 
 
-    fun startScanBle() {
+    private fun startScanBle() {
         bleDevBean?.let {
             if (scanFailCount >= it.maxScanCount) {
                 scanFailCount = 0
-                bleMsgManager?.bleScanFail()
+                CoroutineScope(Dispatchers.Main).launch {
+                    bleMsgManager?.sendBleEvent(BleEvent(BLE_EVENT_SCAN_FAIL, null))
+                }
             } else {
+                dqLog("开始扫描")
                 workHandler.post { BleManager.getInstance().scan(scanCallback) }
             }
         }
@@ -76,11 +105,17 @@ class BlePrepare private constructor() {
         override fun onScanFinished(scanResultList: MutableList<BleDevice>?) {
             dqLog("BlePrepare_扫描结束")
             bleDevBean?.let {
-                if (scanResultList.isNullOrEmpty() || !isExistDescBle(scanResultList, it.wifiName)) {
+                if (scanResultList.isNullOrEmpty() || !isExistDescBle(
+                        scanResultList,
+                        it.wifiName
+                    )
+                ) {
                     retryScan()
                 } else {
                     scanFailCount = 0
-                    bleMsgManager?.onScanResult(scanResultList)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        bleMsgManager?.sendBleEvent(BleEvent(BLE_EVENT_SCAN_RESULT, scanResultList))
+                    }
                 }
             }
         }
@@ -127,7 +162,12 @@ class BlePrepare private constructor() {
             ) {
                 dqLog("BlePrepare_蓝牙断开连接")
                 curBleDev = null
-                bleMsgManager?.onDisConnected(isActiveDisConnected, device, gatt, status)
+//                bleMsgManager?.onDisConnected(isActiveDisConnected, device, gatt, status)
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    bleMsgManager?.sendBleEvent(BleEvent(BLE_EVENT_DISCONNECT, null))
+                }
+
             }
 
             override fun onMtuChanged(gatt: BluetoothGatt?, mtu: Int, status: Int) {
@@ -147,8 +187,9 @@ class BlePrepare private constructor() {
                     connectBle(mac)
                 } else {
                     reConnCount = 0
-                    bleMsgManager?.onConnectFail(bleDevice, exception)
-                    dqLog("BlePrepare_连接失败")
+                    CoroutineScope(Dispatchers.Main).launch {
+                        bleMsgManager?.sendBleEvent(BleEvent(BLE_EVENT_CONNECT_FAIL, null))
+                    }
                 }
             }
         })

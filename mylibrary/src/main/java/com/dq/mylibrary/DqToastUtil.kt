@@ -1,6 +1,7 @@
 package com.dq.mylibrary
 
 import android.widget.Toast
+import com.blankj.utilcode.util.ToastUtils
 
 
 fun doToastShort(title:String){
@@ -9,5 +10,5 @@ fun doToastShort(title:String){
 
 
 fun doToastLong(title:String){
-    Toast.makeText(DqAppInstance.getCurApplication(), title, Toast.LENGTH_LONG).show()
+//    Toast.makeText(DqAppInstance.getCurApplication(), title, Toast.LENGTH_LONG).show()
 }
