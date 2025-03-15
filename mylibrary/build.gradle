@@ -38,30 +38,25 @@ android {
         enabled = true
     }
 
+    buildFeatures {
+        viewBinding true
+    }
+
 
 }
-
-//afterEvaluate {
-//    publishing {
-//        publications {
-//            release(MavenPublication) {
-//                from components.release
-//                groupId = 'com.dq.mylibrary' //groupId 随便取
-//                artifactId = 'dq'  //artifactId 随便取
-//                version = '1.0.1'
-//            }
-//        }
-//    }
-//}
 
 
 dependencies {
 
     implementation libs.appcompat
     implementation libs.material
+    implementation libs.activity
+    implementation libs.constraintlayout
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+
+    implementation 'androidx.core:core-ktx:1.8.0'
 
     //BlankJ
     api(libs.utilcodex)
@@ -69,11 +64,30 @@ dependencies {
     // Ble
     api(libs.fastble)
 
+    api(libs.eventbus)
+
     // XXPermission
 
     // RxJava
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.12'
+
+    // lifecycle
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
+    //glide
+    implementation 'com.github.bumptech.glide:glide:4.14.2'
+    //retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    //retrofit moshi
+    implementation "com.squareup.retrofit2:converter-moshi:2.6.2"
+    //moshi used KotlinJsonAdapterFactory
+    implementation "com.squareup.moshi:moshi-kotlin:1.9.3"
+    //Coroutine
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+
+
 
 
 }

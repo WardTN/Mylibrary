@@ -1,19 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dq.mylibrary">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
     <application>
+        <activity
+            android:name=".mvi.ui.MVIActivity"
+            android:exported="false" />
 
         <provider
+            android:name=".DqFileProvider"
             android:authorities="com.dq.mylibrary.fileProvider"
-            android:name="com.dq.mylibrary.DqFileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/dq_provider_paths"
-                />
-
+                android:resource="@xml/dq_provider_paths" />
         </provider>
 
+        <service android:name=".Wifi.EndoSocketService" />
     </application>
+
 </manifest>
