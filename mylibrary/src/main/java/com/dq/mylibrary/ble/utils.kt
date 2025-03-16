@@ -1,34 +1,16 @@
 package com.dq.mylibrary.ble
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import java.text.DecimalFormat
 
-/**
- * create by zhi_liu on 2021/6/9
- */
-//夜灯调节类型  延时/亮度/色温/无效参数
-enum class ParamType {
-    TYPE_DELAY, TYPE_LIGHT, TYPE_TEMPERATURE
-}
 
-//设备类型
-enum class DevType(val value: Int) {
-    TYPE_BRUSH(0);//牙刷
-
-    companion object {
-        fun getBedType(typeValue: Int): DevType {
-            values().forEach {
-                if (it.value == typeValue) {
-                    return it
-                }
-            }
-            return TYPE_BRUSH
-        }
-    }
-}
 
 fun roundByScale(v: Double, scale: Int): String {
     if (scale < 0) {
@@ -73,3 +55,16 @@ fun getSpData(context: Context, Tag: String): String {
     val sp = context.getSharedPreferences("HomeData", Context.MODE_PRIVATE)
     return sp.getString(Tag, "0")!!
 }
+
+
+// 权限检查扩展函数
+@RequiresApi(Build.VERSION_CODES.M)
+fun Activity.checkBlePermissions(): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED &&
+                checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
+    } else {
+        checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+}
+

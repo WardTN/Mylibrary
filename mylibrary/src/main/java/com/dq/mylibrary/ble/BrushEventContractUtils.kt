@@ -5,8 +5,8 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
 import com.clj.fastble.BleManager
-import com.clj.fastble.callback.BleNotifyCallback
-import com.clj.fastble.callback.BleWriteCallback
+import com.dq.mylibrary.ble.FastBle.BleNotifyCallback
+import com.dq.mylibrary.ble.FastBle.BleWriteCallback
 import com.clj.fastble.data.BleDevice
 import com.clj.fastble.exception.BleException
 import io.reactivex.Observable

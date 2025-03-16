@@ -62,7 +62,7 @@ dependencies {
     api(libs.utilcodex)
 
     // Ble
-    api(libs.fastble)
+//    api(libs.fastble)
 
     api(libs.eventbus)
 

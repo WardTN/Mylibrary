@@ -4,11 +4,11 @@ import android.bluetooth.BluetoothGatt
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
-import com.clj.fastble.BleManager
-import com.clj.fastble.callback.BleNotifyCallback
-import com.clj.fastble.callback.BleWriteCallback
-import com.clj.fastble.data.BleDevice
-import com.clj.fastble.exception.BleException
+import com.dq.mylibrary.ble.FastBle.BleManager
+import com.dq.mylibrary.ble.FastBle.callback.BleNotifyCallback
+import com.dq.mylibrary.ble.FastBle.callback.BleWriteCallback
+import com.dq.mylibrary.ble.FastBle.data.BleDevice
+import com.dq.mylibrary.ble.FastBle.exception.BleException
 import com.dq.mylibrary.dqLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -14,7 +14,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        ToastUtils.showLong("aaaa")
     }
 
     fun main() = runBlocking {
@@ -43,7 +42,5 @@ class MainActivity : AppCompatActivity() {
         }.collect{
             dqLog("firstFlow: $it")
         }
-
-
     }
 }

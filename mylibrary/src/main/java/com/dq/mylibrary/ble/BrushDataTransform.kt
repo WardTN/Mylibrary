@@ -1,7 +1,7 @@
 package com.dq.mylibrary.ble
 
-import com.clj.fastble.data.BleDevice
-import com.clj.fastble.utils.HexUtil
+import com.dq.mylibrary.ble.FastBle.data.BleDevice
+import com.dq.mylibrary.ble.FastBle.utils.HexUtil
 import com.dq.mylibrary.dqLog
 import java.nio.charset.StandardCharsets
 
