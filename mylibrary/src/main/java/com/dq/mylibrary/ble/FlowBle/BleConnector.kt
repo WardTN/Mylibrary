@@ -56,7 +56,7 @@ class BleConnector(
             }
         } catch (e: TimeoutCancellationException) {
             // 如果连接超时，发送错误信息并通过 connectionEventChannel
-            connectionEventChannel.send(ConnectionState.Error("连接超时"))
+            connectionEventChannel.send(ConnectionState.Error("连接超时",device))
             // 关闭连接
             close()
         }
@@ -83,7 +83,7 @@ class BleConnector(
                     }
 
                     BluetoothProfile.STATE_DISCONNECTED -> {
-                        connectionEventChannel.trySend(ConnectionState.Error("连接断开"))
+                        connectionEventChannel.trySend(ConnectionState.Error("连接断开",device))
                         close()
                     }
                 }

@@ -16,5 +16,5 @@ sealed class ConnectionState {
     data class Connecting(val device:BluetoothDevice):ConnectionState()
     data class Connected(val gatt: BluetoothGatt) : ConnectionState()
     data class ServicesDiscovered(val services: List<BluetoothGattService>) : ConnectionState()
-    data class Error(val message: String) : ConnectionState()
+    data class Error(val message: String,val device: BluetoothDevice) : ConnectionState()
 }

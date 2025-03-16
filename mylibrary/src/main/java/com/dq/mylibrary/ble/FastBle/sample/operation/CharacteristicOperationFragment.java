@@ -17,7 +17,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 
-import com.insightface.androidconnecthelper.R;
+import com.dq.mylibrary.R;
 import com.dq.mylibrary.ble.FastBle.BleManager;
 import com.dq.mylibrary.ble.FastBle.callback.BleIndicateCallback;
 import com.dq.mylibrary.ble.FastBle.callback.BleNotifyCallback;
