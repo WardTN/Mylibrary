@@ -29,6 +29,8 @@ class BleScanner(private val context: Context) {
     }
 
     private var scanner: BluetoothLeScanner? = null
+
+    //标识 正在运行的协程任务
     private var scanJob: Job? = null
 
 

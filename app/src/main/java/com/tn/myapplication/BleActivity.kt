@@ -19,12 +19,15 @@ import com.dq.mylibrary.ble.BleEvent
 import com.dq.mylibrary.ble.BlePrepare
 import com.dq.mylibrary.ble.FastBle.data.BleDevice
 import com.dq.mylibrary.ble.FlowBle.BleScanner
+import com.dq.mylibrary.ble.zhBle.ClientType
+import com.dq.mylibrary.ble.zhBle.CoroutineClient
 import com.dq.mylibrary.dqLog
 import com.tn.myapplication.databinding.ActivityBleBinding
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 
 /**
@@ -36,7 +39,14 @@ import kotlinx.coroutines.launch
  */
 class BleActivity : BaseActivity<ActivityBleBinding>() {
 
-    private lateinit var bleScanner: BleScanner
+//    private lateinit var bleScanner: BleScanner
+
+    private val serviceUid: UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb")
+    private val receiveUid: UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")
+    private val sendUid: UUID = UUID.fromString("0000ffe3-0000-1000-8000-00805f9b34fb")
+
+    private lateinit var bluetoothClient: CoroutineClient
+
 
     override fun getViewId(): Int {
         return R.layout.activity_ble
@@ -46,7 +56,7 @@ class BleActivity : BaseActivity<ActivityBleBinding>() {
     override fun initView() {
         super.initView()
 
-        bleScanner = BleScanner(this)
+     /*   bleScanner = BleScanner(this)
 
         findViewById<Button>(R.id.btn_scan).setOnClickListener {
             //启动协程 来 收集Flow 数据
@@ -56,7 +66,11 @@ class BleActivity : BaseActivity<ActivityBleBinding>() {
 //                    ToastUtils.showShort("扫描到设备：${device.name}")
                 }
             }
-        }
+        }*/
+
+
+
+
 
     }
 
@@ -67,29 +81,29 @@ class BleActivity : BaseActivity<ActivityBleBinding>() {
      *
      * @return Flow<BluetoothDevice> 返回一个Flow，用于发布扫描到的蓝牙设备对象
      */
-    fun scascanDevices():Flow<BluetoothDevice> = flow {
-
-        // 创建一个用于缓存设备地址的集合，以避免重复发送相同的设备信息
-        val deviceCache = mutableSetOf<String>()
-
-        // 启动蓝牙低功耗设备扫描
-        bleScanner.startScan().collect{ state->
-            when (state) {
-                is BleScanner.ScanState.FoundDevice -> {
-                    // 获取扫描到的设备地址
-                    val address = state.device.address
-                    // 检查当前设备是否已经在缓存中
-                    if (!deviceCache.contains(address)) {
-                        // 如果不在缓存中，则添加到缓存
-                        deviceCache.add(address)
-                        // 并将设备发送到Flow中，供下游处理
-                        emit(state.device)
-                    }
-                }
-                else -> Unit // 其他扫描状态不做处理
-            }
-        }
-    }.buffer(50) // 添加背压处理，缓冲最多50个设备信息
+//    fun scascanDevices():Flow<BluetoothDevice> = flow {
+//
+//        // 创建一个用于缓存设备地址的集合，以避免重复发送相同的设备信息
+//        val deviceCache = mutableSetOf<String>()
+//
+//        // 启动蓝牙低功耗设备扫描
+//        bleScanner.startScan().collect{ state->
+//            when (state) {
+//                is BleScanner.ScanState.FoundDevice -> {
+//                    // 获取扫描到的设备地址
+//                    val address = state.device.address
+//                    // 检查当前设备是否已经在缓存中
+//                    if (!deviceCache.contains(address)) {
+//                        // 如果不在缓存中，则添加到缓存
+//                        deviceCache.add(address)
+//                        // 并将设备发送到Flow中，供下游处理
+//                        emit(state.device)
+//                    }
+//                }
+//                else -> Unit // 其他扫描状态不做处理
+//            }
+//        }
+//    }.buffer(50) // 添加背压处理，缓冲最多50个设备信息
 
 
 }
