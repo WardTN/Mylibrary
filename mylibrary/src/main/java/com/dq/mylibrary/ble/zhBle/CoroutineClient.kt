@@ -24,8 +24,10 @@ class CoroutineClient(
 ) : BluetoothClient(context, type, serviceUUID) {
 
     private var scanDeviceChannel: SendChannel<Device>? = null
+
     private var connectionStateChannel: SendChannel<ConnectionState>? = null
 
+    // 开始扫描设备
     fun startScan(timeMillis: Long): Flow<Device> {
         return channelFlow {
             if (startScan(0, deviceCallback = ::trySend)) {
@@ -57,6 +59,7 @@ class CoroutineClient(
         reconnectCount: Int = 3
     ): Flow<ConnectionState> {
         curReconnectCount = 0
+
         val connectFlow = channelFlow {
             if (connect(device, mtu, timeoutMillis, 0) { state ->
                     if (reconnectCount > 0) {
@@ -71,6 +74,7 @@ class CoroutineClient(
                 }
             }
         }.flowOn(Dispatchers.IO)
+
         return if (reconnectCount > 0) {
             connectFlow.retryWhen { _, _ ->
                 dqLog("$logTag --> 开始重连count=$curReconnectCount")

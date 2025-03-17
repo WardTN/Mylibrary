@@ -5,6 +5,9 @@ import android.bluetooth.BluetoothDevice
 import android.os.Build
 import android.widget.Button
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import com.blankj.utilcode.util.ToastUtils
 import com.dq.mylibrary.base.BaseActivity
@@ -41,11 +44,12 @@ class BleActivity : BaseActivity<ActivityBleBinding>() {
 
 //    private lateinit var bleScanner: BleScanner
 
-    private val serviceUid: UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb")
-    private val receiveUid: UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")
-    private val sendUid: UUID = UUID.fromString("0000ffe3-0000-1000-8000-00805f9b34fb")
+    private val serviceUid: UUID = UUID.fromString("00010203-0405-0607-0809-0a0b0c0d1910")
+    private val receiveUid: UUID = UUID.fromString("00010203-0405-0607-0809-0a0b0c0d2b10")
+    private val sendUid: UUID = UUID.fromString("00010203-0405-0607-0809-0a0b0c0d2b10")
 
     private lateinit var bluetoothClient: CoroutineClient
+    private var bluetoothType by mutableStateOf(ClientType.BLE)
 
 
     override fun getViewId(): Int {
@@ -56,21 +60,17 @@ class BleActivity : BaseActivity<ActivityBleBinding>() {
     override fun initView() {
         super.initView()
 
-     /*   bleScanner = BleScanner(this)
+        /*   bleScanner = BleScanner(this)
 
-        findViewById<Button>(R.id.btn_scan).setOnClickListener {
-            //启动协程 来 收集Flow 数据
-            lifecycleScope.launch {
-                scascanDevices().collect{ device->
-//                    dqLog("扫描到设备：${device.name}")
-//                    ToastUtils.showShort("扫描到设备：${device.name}")
-                }
-            }
-        }*/
-
-
-
-
+           findViewById<Button>(R.id.btn_scan).setOnClickListener {
+               //启动协程 来 收集Flow 数据
+               lifecycleScope.launch {
+                   scascanDevices().collect{ device->
+   //                    dqLog("扫描到设备：${device.name}")
+   //                    ToastUtils.showShort("扫描到设备：${device.name}")
+                   }
+               }
+           }*/
 
     }
 
@@ -105,5 +105,14 @@ class BleActivity : BaseActivity<ActivityBleBinding>() {
 //        }
 //    }.buffer(50) // 添加背压处理，缓冲最多50个设备信息
 
-
+    // 1.扫描
+    private fun startScanDevice() {
+        bluetoothClient = CoroutineClient(this@BleActivity, bluetoothType, serviceUid)
+        //创建线程实现扫描
+        lifecycleScope.launch {
+            bluetoothClient.startScan(SCAN_TIME_OUT).collect { device ->
+                dqLog("扫描到设备：${device.name}")
+            }
+        }
+    }
 }

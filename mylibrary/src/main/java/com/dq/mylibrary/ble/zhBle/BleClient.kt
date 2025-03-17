@@ -50,22 +50,31 @@ class BleClient(
 
     // 扫描设备回调，用于处理设备扫描结果
     private lateinit var scanDeviceCallback: ScanDeviceCallback
+
     // 连接状态回调，用于处理连接状态变化
     private lateinit var connectionStateCallback: ConnectionStateCallback
+
     // 接收数据的映射，键为特征UUID，值为接收数据的回调函数
     private val receiveDataMap = HashMap<UUID, (ByteArray) -> Unit>()
+
     // 发送数据的映射，键为数据，值为发送结果的回调函数
     private val writeDataMap = HashMap<ByteArray, DataResultCallback>()
+
     // 读取数据的映射，键为特征UUID，值为读取结果的回调函数
     private val readDataMap = HashMap<UUID, DataResultCallback>()
+
     // BluetoothGatt对象，用于与BLE设备进行交互
     private var bluetoothGatt: BluetoothGatt? = null
+
     // MTU值，用于设置最大传输单元
     private var mtu = 0
+
     // 定时器，用于管理超时任务
     private val timer = Timer()
+
     // 当前的超时任务
     private var timeoutTask: TimerTask? = null
+
 
 
     // 扫描回调，用于处理设备扫描结果
@@ -102,16 +111,21 @@ class BleClient(
         }
     }
 
+
     // BluetoothGatt回调，用于处理与BLE设备的交互
     private val gattCallback = object : BluetoothGattCallback() {
         private var discoveredServices = false
+        // 当蓝牙状态变化时调用
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
+
                 discoveredServices = false
                 var mtuResult = false
+                // 如果MTU大于0，则尝试更改MTU
                 if (mtu > 0) {
                     mtuResult = changeMtu(mtu)
                 }
+                // 如果MTU更改失败，则继续尝试获取服务
                 if (!mtuResult) {
                     discoverServices()
                 }
@@ -120,14 +134,24 @@ class BleClient(
             }
         }
 
+        /**
+         * 当服务被发现时调用的回调函数
+         *
+         * @param gatt BluetoothGatt实例，用于与远程设备进行交互
+         * @param status 服务发现操作的状态，表示操作是否成功
+         */
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
 //            dqLog("$logTag --> onServicesDiscovered: status=$status")
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 discoveredServices = true
+
+                // 如果未指定服务UUID，则直接调用连接状态为已连接
                 if (serviceUUID == null) {
                     callConnectionState(ConnectionState.CONNECTED)
                     return
                 }
+
+                // 获取指定UUID的服务
                 val gattService = bluetoothGatt!!.getService(serviceUUID)
                 if (gattService != null) {
                     callConnectionState(ConnectionState.CONNECTED)
@@ -140,6 +164,12 @@ class BleClient(
             }
         }
 
+        /**
+         * 当特征值变化时调用，此方法已弃用，但为了兼容性仍然提供
+         *
+         * @param gatt BluetoothGatt 对象，表示与远程设备的连接
+         * @param characteristic BluetoothGattCharacteristic 对象，表示特征
+         */
         @Deprecated("Deprecated in Java")
         override fun onCharacteristicChanged(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic
@@ -147,12 +177,27 @@ class BleClient(
             @Suppress("DEPRECATION") receiveDataMap[characteristic.uuid]?.invoke(characteristic.value)
         }
 
+        /**
+         * 当特征值变化时调用，接收具体的特征值数据
+         *
+         * @param gatt BluetoothGatt 对象，表示与远程设备的连接
+         * @param characteristic BluetoothGattCharacteristic 对象，表示特征
+         * @param value 字节数组，表示特征的值
+         */
         override fun onCharacteristicChanged(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray
         ) {
             receiveDataMap[characteristic.uuid]?.invoke(value)
         }
 
+
+        /**
+         * 当特征值写入时调用
+         *
+         * @param gatt BluetoothGatt 对象，表示与远程设备的连接
+         * @param characteristic BluetoothGattCharacteristic 对象，表示特征
+         * @param status 写入操作的状态码
+         */
         override fun onCharacteristicWrite(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
@@ -185,6 +230,7 @@ class BleClient(
             callReadDataResult(characteristic.uuid, status == BluetoothGatt.GATT_SUCCESS, value)
         }
 
+        // 当MTU值发生变化时调用
         override fun onMtuChanged(gatt: BluetoothGatt, mtu: Int, status: Int) {
             dqLog("$logTag --> onMtuChanged: status=${status}, mtu=$mtu")
             if (!discoveredServices) {
@@ -216,11 +262,14 @@ class BleClient(
         device: Device, mtu: Int, timeoutMillis: Long, stateCallback: ConnectionStateCallback
     ) {
         this.mtu = mtu
+
         connectionStateCallback = stateCallback
         connectionStateCallback.call(ConnectionState.CONNECTING)
+
         scheduleTimeoutTask(timeoutMillis) {
             callConnectionState(ConnectionState.CONNECT_TIMEOUT)
         }
+
         val realDevice = bluetoothAdapter!!.getRemoteDevice(device.address)
         bluetoothGatt?.safeClose()
         bluetoothGatt = when {
@@ -418,6 +467,7 @@ class BleClient(
         // 将回调存储到映射中
         writeDataMap[data] = callback
 
+
         // 设置超时任务
         scheduleTimeoutTask(timeoutMillis) {
             dqLog("$logTag --> sendData timeout")
@@ -428,7 +478,8 @@ class BleClient(
         val writeCharacteristic = gattService.getCharacteristic(uuid)
         if (writeCharacteristic != null) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                @Suppress("DEPRECATION") writeCharacteristic.value = data
+                @Suppress("DEPRECATION")
+                writeCharacteristic.value = data
                 if (writeType != -1) {
                     writeCharacteristic.writeType = writeType
                 }

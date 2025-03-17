@@ -33,11 +33,15 @@ open class BluetoothClient(private val context: Context, type: ClientType, servi
     protected var curReconnectCount = 0
 
     init {
+        //创建相关客户端
         client = when(type) {
             ClientType.CLASSIC -> ClassicClient(context, bluetoothAdapter, serviceUUID, logTag)
             ClientType.BLE -> BleClient(context, bluetoothAdapter, serviceUUID, logTag)
         }
+
         BluetoothHelper.logTag = logTag
+
+        //注册蓝牙开关状态通知
         BluetoothHelper.registerSwitchReceiver(context, turnOn = {
             turnOn?.invoke()
         }, turnOff={
@@ -54,10 +58,14 @@ open class BluetoothClient(private val context: Context, type: ClientType, servi
      * @see com.zhzc0x.bluetooth.client.ClientState
      * */
     fun checkState(isNext: Boolean = true): ClientState {
+
+        //检查蓝牙状态
         val state = BluetoothHelper.checkState(context, bluetoothAdapter, false)
+        // 如果不需要开启相关权限，直接返回
         if (!isNext) {
             return state
         }
+
         when (state) {
             ClientState.NO_PERMISSIONS -> {
                 clientHandler.post { BluetoothHelper.requestPermissions(context) }
@@ -110,6 +118,7 @@ open class BluetoothClient(private val context: Context, type: ClientType, servi
      * */
     @JvmOverloads
     fun startScan(timeMillis: Long, onEndScan: (() -> Unit)? = null, deviceCallback: ScanDeviceCallback): Boolean {
+        //检测蓝牙状态
         if (!checkValid()) {
             return false
         }

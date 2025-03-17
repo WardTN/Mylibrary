@@ -208,10 +208,12 @@ class CoroutineClientActivity : ComponentActivity() {
         }
     }
 
+    // 停止扫描任务
     private fun stopScanDevice() {
         bluetoothClient.stopScan()
     }
 
+    // 选中连接设备
     private fun connectDevice(device: Device) {
         stopScanDevice()
         lifecycleScope.launch {

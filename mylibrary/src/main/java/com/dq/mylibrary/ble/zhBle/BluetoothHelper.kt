@@ -92,10 +92,10 @@ internal object BluetoothHelper {
             !checkPermissions(context, requestPermission) -> {
                 ClientState.NO_PERMISSIONS
             }
+
             // Android12之后就不需要定位权限了
             Build.VERSION.SDK_INT < Build.VERSION_CODES.S && !LocationManagerCompat.isLocationEnabled(
-                context
-                    .getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             ) -> {
                 ClientState.LOCATION_DISABLE
             }
