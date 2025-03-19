@@ -10,7 +10,51 @@
 
 
 
-1.蓝牙
+# 1.蓝牙
+ 1. 判断定位权限 Android 12 之后就不需要定位权限
+ 2. 申请相关权限 
+    31 之前 
+       android.Manifest.permission.BLUETOOTH,
+       android.Manifest.permission.BLUETOOTH_ADMIN,
+       android.Manifest.permission.ACCESS_FINE_LOCATION,
+       android.Manifest.permission.ACCESS_COARSE_LOCATION
+    31 之后
+       android.Manifest.permission.BLUETOOTH_SCAN,
+       android.Manifest.permission.BLUETOOTH_CONNECT
+
+ 3. 搜索设备
+    bluetoothAdapter!!.bluetoothLeScanner!!.startScan(null, ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build(), scanCallback)
+    在回调中 拿到对应设备信息 BluetoothDevice
+
+ 4. 选中对应设备进行连接
+    val BluetoothDevice = bluetoothAdapter!!.getRemoteDevice(device.address)
+    根据版本不同对应不同参数进行  BluetoothDevice.connectGatt() ---> 返回值为 BluetoothGatt
+
+ 5. BluetoothGattCallback -> onConnectionStateChange
+    如果判断连接成功后 -> 选择功能模块是否要给 MTU 扩容  bluetoothGatt?.requestMtu(this.mtu)
+
+ 6. 发现BLE 设备的服务  bluetoothGatt!!.discoverServices()
+
+ 7. BluetoothGattCallback -> onServicesDiscovered(gatt: BluetoothGatt, status: Int)
+    如果 state 为成功  通过 bluetoothGatt!!.getService(serviceUUID) 拿到对应服务 gattService
+ 
+ 8. 判断可以拿到对应 服务之后 开始 通过 receivedID 接收消息
+    gattService.getCharacteristic(uuid) 拿到 BluetoothGattCharacteristic
+    BluetoothGatt.setCharacteristicNotification(BluetoothGattCharacteristic) 设置特征值
+
+ 9. 远端设备发送消息会回调 BluetoothGattCallback -> onCharacteristicChanged 接收数据
+
+ 10. 写入消息
+     Android 13 及以上 writeType 为 WRITE_TYPE_DEFAULT 以下为 -1
+
+     Android 13以下  
+     writeCharacteristic.value = data
+     writeCharacteristic.writeType = writeType
+ 
+     Android 13 以上
+     bluetoothGatt!!.writeCharacteristic(writeCharacteristic, data, writeType)   
+
+
 
 WIFI连接
 1.WifiManager.startScan() 搜索WIFI设备
@@ -23,8 +67,7 @@ WIFI连接
     1.发送广播 搜寻对应设备 
 
     // 获取WiFi服务管理器，用于获取WiFi连接信息
-        val wifiMgr =
-            context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val wifiMgr = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         // 获取当前WiFi连接的信息
         val wifiInfo = wifiMgr.connectionInfo
         // 获取当前设备的IP地址

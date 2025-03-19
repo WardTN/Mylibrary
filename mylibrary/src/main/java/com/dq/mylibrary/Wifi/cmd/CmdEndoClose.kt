@@ -1,8 +1,6 @@
 package com.dq.mylibrary.Wifi.cmd
 
 import com.dq.mylibrary.Wifi.EndoSocketService
-import com.solex.endo.midea.util.EndoSocketUtils
-import com.solex.endo.midea.util.SolexLogUtil
 
 
 /**
@@ -21,12 +19,12 @@ class CmdEndoClose : EndoBaseCmd() {
     }
 
     override fun getData(cmd: ByteArray): String? {
-        EndoSocketService.lastConnectStatus = false
-        EndoSocketService.hasDeviceCloseCmd = true
-        EndoSocketService.heartTimeOut = true
-        EndoSocketService.lastHeartCmdTime = 0
-        EndoSocketUtils.ADDRESS = ""
-        SolexLogUtil.dq_log("测肤笔 接收到断开连接指令")
+//        EndoSocketService.lastConnectStatus = false
+//        EndoSocketService.hasDeviceCloseCmd = true
+//        EndoSocketService.heartTimeOut = true
+//        EndoSocketService.lastHeartCmdTime = 0
+//        EndoSocketUtils.ADDRESS = ""
+//        SolexLogUtil.dq_log("测肤笔 接收到断开连接指令")
         return null
     }
 

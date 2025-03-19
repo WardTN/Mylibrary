@@ -1,5 +1,6 @@
 package com.dq.mylibrary.ble.FlowBle
 
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
@@ -96,4 +97,19 @@ class BleConnector(
         bluetoochGatt?.close()
         connectionEventChannel.close()
     }
+
+    fun closeGattResource(){
+        bluetoochGatt?.run {
+            disconnect()
+            close()
+            bluetoochGatt = null
+        }
+    }
+
+//    private fun retryWithBluetoothReset() {
+//        if (BluetoothAdapter.getDefaultAdapter().disable()){
+//            handler
+//        }
+//
+//    }
 }

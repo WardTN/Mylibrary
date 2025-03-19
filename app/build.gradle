@@ -1,0 +1,89 @@
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+}
+
+
+android {
+    namespace 'com.tn.myapplication'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.tn.myapplication"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+    buildFeatures{
+        viewBinding true
+        compose = true
+        buildConfig = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.14"
+    }
+
+
+}
+
+dependencies {
+    implementation project(':mylibrary')
+    implementation libs.appcompat
+    implementation libs.material
+    implementation libs.activity
+
+
+    implementation libs.constraintlayout
+
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+
+    // lifecycle
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
+    //glide
+    implementation 'com.github.bumptech.glide:glide:4.14.2'
+    //retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    //retrofit moshi
+    implementation "com.squareup.retrofit2:converter-moshi:2.6.2"
+    //moshi used KotlinJsonAdapterFactory
+    implementation "com.squareup.moshi:moshi-kotlin:1.9.3"
+    //Coroutine
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+
+
+    implementation("androidx.activity:activity-compose:1.9.0")
+    implementation(platform("androidx.compose:compose-bom:2024.06.00"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+
+
+}

@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-//    id 'maven-publish'
+    id 'maven-publish'
 }
 
 android {
@@ -58,11 +58,7 @@ dependencies {
 
     implementation 'androidx.core:core-ktx:1.8.0'
 
-    //BlankJ
     api(libs.utilcodex)
-
-    // Ble
-//    api(libs.fastble)
 
     api(libs.eventbus)
 
@@ -75,6 +71,7 @@ dependencies {
     // lifecycle
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
+
     //glide
     implementation 'com.github.bumptech.glide:glide:4.14.2'
     //retrofit
@@ -86,8 +83,19 @@ dependencies {
     //Coroutine
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+}
 
-
-
-
+afterEvaluate {
+    // 官方建议使用上传方法
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                from components.release // 表示发布 release（jitpack 都不会使用到）
+                groupId = 'com.wardtn.mylibrary' //groupId 随便取 , 这个是依赖库的组 id
+                artifactId = 'mylibrary'  //artifactId 随便取 , 依赖库的名称（jitpack 都不会使用到）
+                version = '1.0.2' // 当前版本依赖库版本号，这个jitpack不会使用到，只是我们开发者自己查看
+            }
+        }
+    }
 }

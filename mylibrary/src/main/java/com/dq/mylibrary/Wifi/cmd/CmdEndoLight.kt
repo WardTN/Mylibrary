@@ -1,7 +1,5 @@
 package com.dq.mylibrary.Wifi.cmd
 
-import com.solex.endo.midea.util.CmdUtil
-import com.solex.endo.midea.util.utils
 
 
 /**
@@ -30,11 +28,11 @@ class CmdEndoLight : EndoBaseCmd() {
         bytes[7] = Integer.parseInt(data).toByte()
 
 //        Log.e("2222","LIGHT加密前："+ EndoSocketUtils.bytesToHexString(bytes))
-        if(utils.Dev_TYPE == 2) {
-            //二代冲牙才需要加密
-            var CmdUtil = CmdUtil()
-            bytes = CmdUtil.MsgWith(bytes,8, byteArrayOf(bytes[4], bytes[5], bytes[6],bytes[7]))
-        }
+//        if(utils.Dev_TYPE == 2) {
+//            //二代冲牙才需要加密
+//            var CmdUtil = CmdUtil()
+//            bytes = CmdUtil.MsgWith(bytes,8, byteArrayOf(bytes[4], bytes[5], bytes[6],bytes[7]))
+//        }
 //        Log.e("2222","LIGHT加密后："+ EndoSocketUtils.bytesToHexString(bytes))
         return bytes
     }

@@ -1,10 +1,6 @@
 package com.dq.mylibrary.Wifi.cmd
 
-import com.solex.endo.midea.ui.event.EndoSetWiFiEvents
-import com.solex.endo.midea.ui.service.EndoSocketService.Companion.setWiFiPWD
-import com.solex.endo.midea.ui.service.EndoSocketService.Companion.setWiFiSSID
-import com.solex.endo.midea.util.CmdUtil
-import com.solex.endo.midea.util.utils
+
 import org.greenrobot.eventbus.EventBus
 
 
@@ -35,20 +31,20 @@ class CmdEndoWiFiPWD : EndoBaseCmd() {
         }
 
 //        Log.e("2222","WIFI_PWD加密前："+ EndoSocketUtils.bytesToHexString(bytes))
-        if(utils.Companion.Dev_TYPE == 2) {
-            //二代冲牙才需要加密
-            var CmdUtil = CmdUtil()
-            bytes = CmdUtil.MsgWith(bytes,7 + data.length, cycbytes)
-        }
+//        if(utils.Companion.Dev_TYPE == 2) {
+//            //二代冲牙才需要加密
+//            var CmdUtil = CmdUtil()
+//            bytes = CmdUtil.MsgWith(bytes,7 + data.length, cycbytes)
+//        }
 //        Log.e("2222","WIFI_PWD加密后："+ EndoSocketUtils.bytesToHexString(bytes))
         return bytes
     }
 
     override fun getData(cmd: ByteArray): String? {
-        setWiFiPWD = true
-        if (setWiFiSSID){
-            EventBus.getDefault().post(EndoSetWiFiEvents(true))
-        }
+//        setWiFiPWD = true
+//        if (setWiFiSSID){
+//            EventBus.getDefault().post(EndoSetWiFiEvents(true))
+//        }
         return null
     }
 
