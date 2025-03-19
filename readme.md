@@ -67,8 +67,7 @@ WIFI连接
     1.发送广播 搜寻对应设备 
 
     // 获取WiFi服务管理器，用于获取WiFi连接信息
-        val wifiMgr =
-            context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val wifiMgr = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         // 获取当前WiFi连接的信息
         val wifiInfo = wifiMgr.connectionInfo
         // 获取当前设备的IP地址
